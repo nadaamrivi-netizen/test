@@ -1,0 +1,389 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+session_start();
+require_once __DIR__ . '/config/database.php';
+
+$path = __DIR__ . '/config/database.php';
+if (!file_exists($path)) {
+    die("File database.php tidak ditemukan di: $path");
+}
+require_once $path;
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$conn = getConnection();
+
+// Get statistics
+$stats = [];
+try {
+    // Total orders today
+    $sql = "SELECT COUNT(*) FROM orders WHERE DATE(created_at) = CURDATE()";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $stats['orders_today'] = $stmt->fetchColumn();
+    
+    // Total revenue today
+    $sql = "SELECT COALESCE(SUM(total_amount), 0) FROM orders WHERE DATE(created_at) = CURDATE() AND payment_status = 'paid'";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $stats['revenue_today'] = $stmt->fetchColumn();
+    
+    // Pending orders
+    $sql = "SELECT COUNT(*) FROM orders WHERE status = 'pending'";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $stats['pending_orders'] = $stmt->fetchColumn();
+    
+    // Total menu items
+    $sql = "SELECT COUNT(*) FROM menu_items WHERE is_available = 1";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $stats['total_menu'] = $stmt->fetchColumn();
+    
+} catch (PDOException $e) {
+    $stats = [
+        'orders_today' => 0,
+        'revenue_today' => 0,
+        'pending_orders' => 0,
+        'total_menu' => 0
+    ];
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warkop Bahagia Sedjahtera - Minuman & Makanan </title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-logo">
+                    <i class="fas fa-coffee"></i>
+                    <span>Warkop Bahagia Sedjahtera</span>
+                </div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#home" class="nav-link">Beranda</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#menu" class="nav-link">Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#gallery" class="nav-link">Galeri</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#order" class="nav-link">Pesan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contact" class="nav-link">Kontak</a>
+                    </li>
+                </ul>
+                <div class="hamburger">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Selamat Datang di Warkop Bahagia Sedjahtera</h1>
+            <p class="hero-subtitle">Nikmati minuman dan makanan terbaik dengan suasana yang nyaman</p>
+            <div class="hero-buttons">
+                <a href="#menu" class="btn btn-primary">Lihat Menu</a>
+                <a href="#order" class="btn btn-secondary">Pesan Sekarang</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="assets/images/nuansa.jpeg" alt="Warkop Bahagia Sedjahtera">
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section id="menu" class="menu-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Menu Favorit Kami</h2>
+                <p>Pilihan menu terbaik dengan cita rasa autentik</p>
+            </div>
+            <div class="menu-categories">
+                <button class="category-btn active" data-category="all">Semua</button>
+                <button class="category-btn" data-category="makanan">Makanan</button>
+                <button class="category-btn" data-category="minuman">Minuman</button>
+                <button class="category-btn" data-category="paket hemat">Paket Hemat</button>
+                <button class="category-btn" data-category="snack">Snack</button>
+            </div>
+            <div class="menu-grid" id="menuGrid">
+                <!-- Menu items will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Galeri Foto</h2>
+                <p>Lihat suasana dan menu favorit kami</p>
+            </div>
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Gallery items will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Section -->
+    <section id="order" class="order-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Pesan Online</h2>
+                <p>Pesan makanan favorit Anda dengan mudah</p>
+            </div>
+            <div class="order-container">
+                <div class="order-form">
+                    <h3>Form Pemesanan</h3>
+                    <form id="orderForm">
+                        <div class="form-group">
+                            <label for="customerName">Nama Lengkap</label>
+                            <input type="text" id="customerName" name="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Nomor Telepon</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerAddress">Alamat Pengiriman</label>
+                            <textarea id="customerAddress" name="customerAddress" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderNotes">Catatan Pesanan</label>
+                            <textarea id="orderNotes" name="orderNotes"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lanjut ke Menu</button>
+                    </form>
+                </div>
+                <div class="cart-container">
+                    <h3>Keranjang Belanja</h3>
+                    <div class="cart-items" id="cartItems">
+                        <p class="empty-cart">Keranjang belanja kosong</p>
+                    </div>
+                    <div class="cart-total">
+                        <div class="total-item">
+                            <span>Total Item:</span>
+                            <span id="totalItems">0</span>
+                        </div>
+                        <div class="total-price">
+                            <span>Total Harga:</span>
+                            <span id="totalPrice">Rp 0</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="checkoutBtn" disabled>Checkout</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Hubungi Kami</h2>
+                <p>Kami siap melayani Anda</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Alamat</h4>
+                            <p>Jl. Terusan Mabes Hankam No.80, Setu, Kec. Cipayung, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13880</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Telepon</h4>
+                            <p>0895391770361</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>fawwasadiyanto217@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <h4>Jam Buka</h4>
+                            <p>Senin - Minggu: 09.00-02.00</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-map">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.603607440716!2d106.915616!3d-6.3156874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69930009702cdd%3A0x7c0e2c9d6de32163!2sWarkop%20Belong!5e0!3m2!1sen!2sid!4v1754316857371!5m2!1sen!2sid" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Warkop Bahagia Sedjahtera - Minuman & Makanan</h3>
+                    <p>Nikmati minuman dan makanan terbaik dengan suasana yang nyaman dan pelayanan yang ramah.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-WhatshAap"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Menu</h4>
+                    <ul>
+                        <li><a href="#menu">Makanan</a></li>
+                        <li><a href="#menu">Minuman</a></li>
+                        <li><a href="#menu">Paket Hemat</a></li>
+                        <li><a href="#menu">Snack</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Layanan</h4>
+                    <ul>
+                        <li><a href="#order">Pesan Online</a></li>
+                        <li><a href="#gallery">Galeri</a></li>
+                        <li><a href="admin/">Admin Panel</a></li>
+                        <li><a href="#contact">Kontak</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Jam Buka</h4>
+                    <p>Senin - Minggu: 09.00-02.00</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Warkop Bahagia Sedjahtera. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal for Menu Details -->
+    <div id="menuModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <div class="menu-detail">
+                    <img id="modalMenuImage" src="" alt="">
+                    <div class="menu-info">
+                        <h3 id="modalMenuName"></h3>
+                        <p id="modalMenuDescription"></p>
+                        <div class="menu-price">
+                            <span id="modalMenuPrice"></span>
+                        </div>
+                        <div class="menu-actions">
+                            <div class="quantity-control">
+                                <button class="qty-btn" onclick="decreaseQuantity()">-</button>
+                                <input type="number" id="menuQuantity" value="1" min="1">
+                                <button class="qty-btn" onclick="increaseQuantity()">+</button>
+                            </div>
+                            <button class="btn btn-primary" onclick="addToCart()">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</body>
+</html> 
+
+    <script src="assets/js/admin.js"></script>
+    <script>
+        // Load recent orders
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecentOrders();
+        });
+
+        function loadRecentOrders() {
+            fetch('../api/orders.php?limit=5')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayRecentOrders(data.data);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading recent orders:', error);
+                });
+        }
+
+        function displayRecentOrders(orders) {
+            const tableBody = document.getElementById('recentOrdersTable');
+            tableBody.innerHTML = '';
+
+            if (orders.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Tidak ada pesanan terbaru</td></tr>';
+                return;
+            }
+
+            orders.forEach(order => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${order.order_number}</td>
+                    <td>${order.customer_name}</td>
+                    <td>Rp ${parseInt(order.total_amount).toLocaleString()}</td>
+                    <td><span class="status-badge status-${order.status}">${getStatusText(order.status)}</span></td>
+                    <td>${formatDate(order.created_at)}</td>
+                    <td>
+                        <a href="orders.php?id=${order.id}" class="btn btn-sm btn-primary">Detail</a>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Pending',
+                'confirmed': 'Dikonfirmasi',
+                'preparing': 'Disiapkan',
+                'ready': 'Siap',
+                'delivered': 'Dikirim',
+                'cancelled': 'Dibatalkan'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>
