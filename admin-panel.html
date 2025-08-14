@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Portofolio Nada Cahya Amrivi</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Admin Header -->
+    <header class="admin-header">
+        <div class="header-container">
+            <div class="header-logo">
+                <i class="fas fa-user-shield"></i>
+                <h1>Admin Panel</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="exportData()">
+                    <i class="fas fa-download"></i> Export Data
+                </button>
+                <button class="btn btn-primary" onclick="saveAllChanges()">
+                    <i class="fas fa-save"></i> Simpan Semua
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <div class="admin-container">
+            <!-- Sidebar Navigation -->
+            <aside class="admin-sidebar">
+                <nav class="sidebar-nav">
+                    <a href="#personal-info" class="nav-item active" onclick="showSection('personal-info')">
+                        <i class="fas fa-user"></i>
+                        <span>Informasi Pribadi</span>
+                    </a>
+                    <a href="#skills" class="nav-item" onclick="showSection('skills')">
+                        <i class="fas fa-tools"></i>
+                        <span>Keahlian</span>
+                    </a>
+                    <a href="#projects" class="nav-item" onclick="showSection('projects')">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Proyek</span>
+                    </a>
+                    <a href="#social-media" class="nav-item" onclick="showSection('social-media')">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Social Media</span>
+                    </a>
+                    <a href="#messages" class="nav-item" onclick="showSection('messages')">
+                        <i class="fas fa-envelope"></i>
+                        <span>Pesan Masuk</span>
+                        <span class="message-badge" id="messageCount">0</span>
+                    </a>
+                    <a href="#analytics" class="nav-item" onclick="showSection('analytics')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analytics</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="admin-content">
+                <!-- Personal Information Section -->
+                <section id="personal-info" class="content-section active">
+                    <div class="section-header">
+                        <h2><i class="fas fa-user"></i> Informasi Pribadi</h2>
+                        <p>Update informasi pribadi dan kontak</p>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="name">Nama Lengkap</label>
+                            <input type="text" id="name" value="Nada Cahya Amrivi" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="title">Judul/Profesi</label>
+                            <input type="text" id="title" value="Mahasiswa Sistem Informasi UIN Imam Bonjol Padang" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" value="nadaamrivi@gmail.com" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telepon</label>
+                            <input type="tel" id="phone" value="082171809033" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Lokasi</label>
+                            <input type="text" id="location" value="Padang, Indonesia" class="form-input">
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="description">Deskripsi</label>
+                            <textarea id="description" rows="4" class="form-input">Saya adalah salah satu mahasiswa UIN Imam Bonjol Padang dengan jurusan Sistem Informasi yang passionate dalam menciptakan pengalaman digital yang menarik dan fungsional.</textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="about">Tentang Saya</label>
+                            <textarea id="about" rows="6" class="form-input">Saya adalah mahasiswa Sistem Informasi di UIN Imam Bonjol Padang yang passionate dalam menciptakan pengalaman digital yang menarik dan fungsional. Saya fokus pada pengembangan aplikasi web modern dan desain antarmuka yang user-friendly.</textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Skills Section -->
+                <section id="skills" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tools"></i> Keahlian Teknis</h2>
+                        <p>Update level keahlian dan tambah skill baru</p>
+                    </div>
+                    <div class="skills-container">
+                        <div class="skill-category">
+                            <h3>Frontend Development</h3>
+                            <div class="skill-items">
+                                <div class="skill-item">
+                                    <span class="skill-name">HTML5</span>
+                                    <input type="range" min="0" max="100" value="95" class="skill-slider" data-skill="HTML5">
+                                    <span class="skill-value">95%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">CSS3</span>
+                                    <input type="range" min="0" max="100" value="90" class="skill-slider" data-skill="CSS3">
+                                    <span class="skill-value">90%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">JavaScript</span>
+                                    <input type="range" min="0" max="100" value="85" class="skill-slider" data-skill="JavaScript">
+                                    <span class="skill-value">85%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">React.js</span>
+                                    <input type="range" min="0" max="100" value="80" class="skill-slider" data-skill="React.js">
+                                    <span class="skill-value">80%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <h3>Backend Development</h3>
+                            <div class="skill-items">
+                                <div class="skill-item">
+                                    <span class="skill-name">Node.js</span>
+                                    <input type="range" min="0" max="100" value="85" class="skill-slider" data-skill="Node.js">
+                                    <span class="skill-value">85%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">PHP</span>
+                                    <input type="range" min="0" max="100" value="80" class="skill-slider" data-skill="PHP">
+                                    <span class="skill-value">80%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">MySQL</span>
+                                    <input type="range" min="0" max="100" value="75" class="skill-slider" data-skill="MySQL">
+                                    <span class="skill-value">75%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <h3>Tools & Others</h3>
+                            <div class="skill-items">
+                                <div class="skill-item">
+                                    <span class="skill-name">Git</span>
+                                    <input type="range" min="0" max="100" value="90" class="skill-slider" data-skill="Git">
+                                    <span class="skill-value">90%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">Figma</span>
+                                    <input type="range" min="0" max="100" value="100" class="skill-slider" data-skill="Figma">
+                                    <span class="skill-value">100%</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-name">VS Code</span>
+                                    <input type="range" min="0" max="100" value="95" class="skill-slider" data-skill="VS Code">
+                                    <span class="skill-value">95%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="add-skill-section">
+                        <h3>Tambah Skill Baru</h3>
+                        <div class="add-skill-form">
+                            <input type="text" id="newSkillName" placeholder="Nama Skill" class="form-input">
+                            <select id="newSkillCategory" class="form-input">
+                                <option value="frontend">Frontend Development</option>
+                                <option value="backend">Backend Development</option>
+                                <option value="tools">Tools & Others</option>
+                            </select>
+                            <input type="range" id="newSkillLevel" min="0" max="100" value="50" class="skill-slider">
+                            <span id="newSkillValue">50%</span>
+                            <button class="btn btn-primary" onclick="addNewSkill()">
+                                <i class="fas fa-plus"></i> Tambah Skill
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Projects Section -->
+                <section id="projects" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-project-diagram"></i> Proyek</h2>
+                        <p>Kelola proyek-proyek portfolio</p>
+                    </div>
+                    <div class="projects-list" id="projectsList">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                    <button class="btn btn-primary" onclick="addNewProject()">
+                        <i class="fas fa-plus"></i> Tambah Proyek Baru
+                    </button>
+                </section>
+
+                <!-- Social Media Section -->
+                <section id="social-media" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-share-alt"></i> Social Media</h2>
+                        <p>Update link social media</p>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="linkedin">LinkedIn</label>
+                            <input type="url" id="linkedin" value="https://www.linkedin.com/in/nada-cahya-amrivi-a59515346" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="github">GitHub</label>
+                            <input type="url" id="github" value="https://github.com/nadaamrivi-netizen" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="instagram">Instagram</label>
+                            <input type="url" id="instagram" value="https://www.instagram.com/nadachy_/?utm_source=ig_web_button_share_sheet" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="tiktok">TikTok</label>
+                            <input type="url" id="tiktok" value="https://www.tiktok.com/@nadreyn?is_from_webapp=1&sender_device=pc" class="form-input">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Messages Section -->
+                <section id="messages" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-envelope"></i> Pesan Masuk</h2>
+                        <p>Kelola pesan dari pengunjung website</p>
+                    </div>
+                    <div class="messages-container">
+                        <div class="messages-filters">
+                            <button class="filter-btn active" onclick="filterMessages('all')">Semua</button>
+                            <button class="filter-btn" onclick="filterMessages('unread')">Belum Dibaca</button>
+                            <button class="filter-btn" onclick="filterMessages('read')">Sudah Dibaca</button>
+                            <button class="btn btn-danger" onclick="deleteAllMessages()">
+                                <i class="fas fa-trash"></i> Hapus Semua
+                            </button>
+                        </div>
+                        <div class="messages-list" id="messagesList">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analytics Section -->
+                <section id="analytics" class="content-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-chart-bar"></i> Analytics</h2>
+                        <p>Statistik website dan performa</p>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h3 id="totalViews">0</h3>
+                                <p>Total Kunjungan</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h3 id="totalMessages">0</h3>
+                                <p>Total Pesan</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h3 id="avgTime">0s</h3>
+                                <p>Rata-rata Waktu Kunjungan</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-mouse-pointer"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h3 id="totalClicks">0</h3>
+                                <p>Total Klik</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-charts">
+                        <div class="chart-container">
+                            <h3>Kunjungan Bulanan</h3>
+                            <canvas id="visitsChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h3>Top Pages</h3>
+                            <div id="topPages"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Project Details -->
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Proyek</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="projectTitle">Judul Proyek</label>
+                    <input type="text" id="projectTitle" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription">Deskripsi</label>
+                    <textarea id="projectDescription" rows="4" class="form-input"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectImage">URL Gambar</label>
+                    <input type="url" id="projectImage" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="projectTechnologies">Teknologi (pisahkan dengan koma)</label>
+                    <input type="text" id="projectTechnologies" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="projectDemo">URL Demo</label>
+                    <input type="url" id="projectDemo" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="projectCode">URL Code</label>
+                    <input type="url" id="projectCode" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+                <button class="btn btn-primary" onclick="saveProject()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Message Details -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detail Pesan</h3>
+                <span class="close" onclick="closeMessageModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="messageDetails">
+                <!-- Message details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMessageModal()">Tutup</button>
+                <button class="btn btn-danger" onclick="deleteMessage()">Hapus Pesan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-script.js"></script>
+    <script src="test-admin.js"></script>
+</body>
+</html> 
