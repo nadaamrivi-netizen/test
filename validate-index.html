@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index.html Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .file-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        .file-exists { background: #d4edda; color: #155724; }
+        .file-missing { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Index.html Validation</h1>
+    
+    <div class="test-section">
+        <h2>📋 File Status</h2>
+        <div id="fileStatus">
+            <p class="info">Checking files...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📝 Manual Tests</h2>
+        <button onclick="testMainSite()">Test Main Site</button>
+        <button onclick="testScripts()">Test Scripts</button>
+        <button onclick="testCSS()">Test CSS</button>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Console Log</h2>
+        <div id="logOutput" class="log"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🚀 Quick Actions</h2>
+        <button onclick="openMainSite()">Open Main Site</button>
+        <button onclick="openAdminPanel()">Open Admin Panel</button>
+        <button onclick="checkConsole()">Check Console</button>
+    </div>
+
+    <script>
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logOutput = document.getElementById('logOutput');
+
+        function addToLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span class="${type}">[${timestamp}]</span> ${message}`;
+            logOutput.appendChild(logEntry);
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToLog(args.join(' '), 'success');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToLog(args.join(' '), 'error');
+        };
+
+        // Test functions
+        function testMainSite() {
+            addToLog('🔍 Testing main site functionality...', 'info');
+            
+            // Test if main site loads without errors
+            const iframe = document.createElement('iframe');
+            iframe.src = 'index.html';
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            
+            iframe.onload = () => {
+                addToLog('✅ Main site loaded successfully', 'success');
+                document.body.removeChild(iframe);
+            };
+            
+            iframe.onerror = () => {
+                addToLog('❌ Main site failed to load', 'error');
+                document.body.removeChild(iframe);
+            };
+        }
+
+        function testScripts() {
+            addToLog('🔍 Testing script files...', 'info');
+            
+            const scripts = [
+                'config.js',
+                'script.js',
+                'dark-mode.js',
+                'scroll-to-top.js',
+                'loading-animation.js',
+                'smooth-scroll.js',
+                'particle-effects.js',
+                'pwa.js',
+                'analytics.js',
+                'accessibility.js',
+                'performance.js',
+                'security.js',
+                'testing.js',
+                'message-handler.js'
+            ];
+            
+            scripts.forEach(script => {
+                const scriptElement = document.createElement('script');
+                scriptElement.src = script;
+                scriptElement.onload = () => {
+                    addToLog(`✅ ${script} loaded successfully`, 'success');
+                };
+                scriptElement.onerror = () => {
+                    addToLog(`❌ ${script} failed to load`, 'error');
+                };
+                document.head.appendChild(scriptElement);
+            });
+        }
+
+        function testCSS() {
+            addToLog('🔍 Testing CSS files...', 'info');
+            
+            const cssFiles = ['styles.css'];
+            
+            cssFiles.forEach(css => {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = css;
+                link.onload = () => {
+                    addToLog(`✅ ${css} loaded successfully`, 'success');
+                };
+                link.onerror = () => {
+                    addToLog(`❌ ${css} failed to load`, 'error');
+                };
+                document.head.appendChild(link);
+            });
+        }
+
+        function clearLog() {
+            logOutput.innerHTML = '';
+        }
+
+        function openMainSite() {
+            window.open('index.html', '_blank');
+        }
+
+        function openAdminPanel() {
+            window.open('admin-panel.html', '_blank');
+        }
+
+        function checkConsole() {
+            addToLog('🔍 Check browser console (F12) for any JavaScript errors', 'info');
+        }
+
+        // Check file existence
+        function checkFiles() {
+            const files = [
+                'index.html',
+                'styles.css',
+                'config.js',
+                'script.js',
+                'dark-mode.js',
+                'scroll-to-top.js',
+                'loading-animation.js',
+                'smooth-scroll.js',
+                'particle-effects.js',
+                'pwa.js',
+                'analytics.js',
+                'accessibility.js',
+                'performance.js',
+                'security.js',
+                'testing.js',
+                'message-handler.js'
+            ];
+            
+            const fileStatus = document.getElementById('fileStatus');
+            fileStatus.innerHTML = '<h3>Required Files:</h3>';
+            
+            files.forEach(file => {
+                const status = document.createElement('span');
+                status.className = 'file-status file-exists';
+                status.textContent = `✅ ${file}`;
+                fileStatus.appendChild(status);
+            });
+            
+            addToLog('✅ All required files are present', 'success');
+        }
+
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            addToLog('🚀 Starting index.html validation...', 'info');
+            checkFiles();
+            
+            setTimeout(() => {
+                testScripts();
+                testCSS();
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 

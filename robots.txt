@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Disallow specific files and directories
+Disallow: /config.js
+Disallow: /script.js
+Disallow: /dark-mode.js
+Disallow: /scroll-to-top.js
+Disallow: /loading-animation.js
+Disallow: /smooth-scroll.js
+Disallow: /particle-effects.js
+
+# Allow important files
+Allow: /index.html
+Allow: /styles.css
+Allow: /favicon.ico
+Allow: /images/
+Allow: /assets/
+
+# Crawl delay (optional)
+Crawl-delay: 1 
